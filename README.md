@@ -11,7 +11,7 @@ Data for the ride requests needs to be downloaded from the Taxi and Limousine Co
 2022 >> March >> Yellow Taxi Trip Records (PARQUET)
 The .parquet file should be saved in the same folder as the main files, listed below, under the name “yellow_tripdata_2022-03.parquet”
 
-#Execution
+# Execution
 Main files: To execute the cases described in [1], run as follow:
 
 Business-as-usual case: run the file “businessAsUsualCase.py”, for the random SOC results, average over 10 experiments.
@@ -20,13 +20,13 @@ Case 2: run the file “case2.py”, for the sunny day and 75% willingness to ri
 Fossil-fuel vehicles case: run the file “fossilFuelCase.py”.
 
 The same folder that contains the main file above, should have:
-1.      tripData.py: code to prepare the ride request data from the “yellow_tripdata_2022-03.parquet” file.
-2.      ChargeRequest.py: charge request class.
-3.      RideRequest.py: ride request class.
-4.      Vehicle.py: vehicle class
-5.      functions.py: Miscellaneous functions
-6.      taxiZones.cvs: Taxi Zone Lookup Table
-7.      PV_norm.cvs: PV generation data for sunny, cloudy morning, and cloudy afternoon scenarios.
+·        tripData.py: code to prepare the ride request data from the “yellow_tripdata_2022-03.parquet” file.
+·        ChargeRequest.py: charge request class.
+·        RideRequest.py: ride request class.
+·        Vehicle.py: vehicle class
+·        functions.py: Miscellaneous functions
+·        taxiZones.cvs: Taxi Zone Lookup Table
+·        PV_norm.cvs: PV generation data for sunny, cloudy morning, and cloudy afternoon scenarios.
 
 To repeat the experiments presented in [1], for conditions such as weather are initial SOC, follow:
 
