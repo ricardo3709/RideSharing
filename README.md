@@ -1,6 +1,6 @@
 # Renewable-Based Charging in Green Ride-Sharing
 
-Pyhton code that implements a Gauss-Seidel algorithm to promote renewable-based charging in a 100% -electrified fleet of vehicles for ride-hailing or ride-sharing services, as described in [1]. 
+Python code that implements a Gauss-Seidel algorithm to promote renewable-based charging in a 100% -electrified fleet of vehicles for ride-hailing or ride-sharing services, as described in [1]. 
 
 # Required Software
 
@@ -12,9 +12,9 @@ PuLP: https://pypi.org/project/PuLP/
 
 # Data
 
-Data for the ride requests can be downloaded from the Manhattan Taxi and Limousine Commission website https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page, selecting 2022 >> March >> Yellow Taxi Trip Records (PARQUET)
+Data for the ride requests can be downloaded from the Manhattan Taxi and Limousine Commission website https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page, selecting 2022 >> March >> Yellow Taxi Trip Records (PARQUET).
 
-The .parquet file must be saved in the same folder as the main files, listed below, under the name <em>yellow_tripdata_2022-03.parquet</em>
+The .parquet file must be saved in the same folder as the main files, listed below, under the name <em>yellow_tripdata_2022-03.parquet</em>.
 
 # Execution
 
