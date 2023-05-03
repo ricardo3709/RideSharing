@@ -3,7 +3,9 @@ Pyhton code that implements a Gauss-Seidel algorithm to promote renewable-based 
 
 # Required Software
 Python 3.8 or earlier: https://www.python.org/downloads/
+
 cvxpy: https://www.cvxpy.org/install/
+
 PuLP: https://pypi.org/project/PuLP/
 
 # Data
