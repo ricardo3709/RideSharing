@@ -26,10 +26,12 @@ np.random.seed(10)
 n_veh = 100
 
 # Number of iterations for avg random SOC case
-num_iter = 10
+# num_iter = 10
+num_iter = 1 #for config
 
 # Customer's willingness to share a ride:
-sharing_prob = 0.75 # Enter value between 0 and 1
+# sharing_prob = 0.75 # Enter value between 0 and 1
+sharing_prob = 1 # for config
 
 # PV generation profile, select data to import
 pv_prof = tData.pv_sunny
@@ -58,7 +60,8 @@ min_travel_time = 5  # min
 min_consume = 0.5  # kWh
 station_power = 25  # kW per station at peak power
 power_transferred = 12  # kW for each car charging
-discharge_rate = 0.1  # kWh/minute
+# discharge_rate = 0.1  # kWh/minute
+discharge_rate = 0  # for config, no charging needed
 charge_rate = discharge_rate * 2
 infeasib_cost = 1e5
 infeasib_threas = 1e4
@@ -85,6 +88,9 @@ g.add_edges_from(elist)
 n = g.number_of_nodes()
 
 for it in range(num_iter):
+
+    num_sharedRide = 0 #for config
+
     np.random.seed(0)
     print("*** Iteration: " + str(it) + " ***")
     # Reset vehicle positions
@@ -96,7 +102,8 @@ for it in range(num_iter):
 
     # Initiate the state of charge for each vehicle
     for j in range(n_veh):
-        vehicles[j].stateOfCharge = random_soc[it][j]
+        # vehicles[j].stateOfCharge = random_soc[it][j]
+        vehicles[j].stateOfCharge = full_charge #ini with full_charge for config
 
     # Track Pref
     y_Pref_current = []
@@ -121,9 +128,9 @@ for it in range(num_iter):
     h_format = []
 
     # Iterate over requests, deltaT = 1 min
-    for k in range(tData.num_min):
-        PULoc = tData.records[k][0]
-        DOLoc = tData.records[k][1]
+    for k in range(tData.num_min): #num_min: minutes
+        PULoc = tData.records[k][0] #Pick-Up Location, tData.records -> dictionary
+        DOLoc = tData.records[k][1] #Drop-off Location
         h_bid = [np.random.uniform(tData.h_aux_min[k], tData.h_aux[k]) for i in range(5)]
         b_min = [np.random.uniform(-tData.b_aux[k], 0) for i in range(len(station_nodes))]
         b_max = [np.random.uniform(0, tData.b_aux[k]) for i in range(len(station_nodes))]
@@ -169,6 +176,7 @@ for it in range(num_iter):
                 if vehicles[j].estimated_done_riding < k and not vehicles[j].charging:
                     vehicles[j].charging = True
                     cars_charging[station_nodes.index(vehicles[j].position)] += 1
+                    print("Car is Charging!!!") #for config
                 elif vehicles[j].estimated_done_charging - min_travel_time <= k and vehicles[j].charging and not \
                 vehicles[j].removed:
                     future_cars_charging[station_nodes.index(vehicles[j].request.location)] -= 1
@@ -234,6 +242,7 @@ for it in range(num_iter):
                     if start_path[j][:-1] + req_vec[req_idx].path == vehicles[j].path and vehicles[j].capacity > 0 and \
                             k - vehicles[j].last_update < travel_edge_time // 2 and vehicles[j].sharing and req_vec[req_idx].share_ride:
                         start_costs[j] = len(start_path[j]) - 1
+                        num_sharedRide += 1
                     else:
                         start_costs[j] = infeasib_cost
                 else:
@@ -317,8 +326,12 @@ for it in range(num_iter):
         else:
             cost = np.array(cost).transpose()
 
+        # for config
+        # check det of matrix, for unimodular, det = +-1
+        # det = np.linalg.det(cost)
+            
         cost_array = cost.transpose().flatten()
-        inf_idx = [i for i, x in enumerate(cost_array) if x == infeasib_cost]
+        inf_idx = [i for i, x in enumerate(cost_array) if x == infeasib_cost] #index of infeasiable cost
         feas_idx_num = n_assign * n_assign - len(inf_idx)
 
         # Solve assignment problem
@@ -390,13 +403,13 @@ for it in range(num_iter):
 
             # Solve inner using cvxpy
             fin_incent_y = []
-            # ride req part
+            # ride req part # ATTENTION
             if len(x_feas_ride):
                 yinn_ride = cp.Variable(len(x_feas_ride))
                 objective = cp.Minimize(cp.sum_squares(yinn_ride - np.array(yStar_feas_ride)))
                 constraint = [-1 <= yinn_ride, yinn_ride <= 1]
                 problem = cp.Problem(objective, constraint)
-                problem.solve()
+                problem.solve() #ATTENTION
                 fin_incent_y = yinn_ride.value.tolist()
 
                 if t == Kout - 1:
@@ -442,11 +455,11 @@ for it in range(num_iter):
                 raise Exception("ERROR: incorrect number of incentives")
 
             # Solve the assignment problem using PuLP, a Python toolbox
-            prob = pulp.LpProblem("AssignmentProblem", pulp.LpMinimize)
+            prob = pulp.LpProblem("AssignmentProblem", pulp.LpMinimize) #(problem name, optimization method)
 
             x_list = []
             for i in range(n_assign * n_assign):
-                x_list.append(pulp.LpVariable("x" + str(i), 0, 1, pulp.LpInteger))
+                x_list.append(pulp.LpVariable("x" + str(i), 0, 1, pulp.LpInteger)) #(name, lowbound, upbound, category) initialize x_list as a list of LpVariables
 
             prob += pulp.lpSum(cost_function[m] * x_list[m] for m in range(n_assign * n_assign)), "obj function"
 
@@ -528,6 +541,8 @@ for it in range(num_iter):
     ev_ride_time_avg += np.array(ev_ride_time)
     ev_charge_time_avg += np.array(ev_charge_time)
     ev_idle_time_avg += np.array(ev_idle_time)
+
+    print("num of shared ride: ", num_sharedRide) #for config
 
 # Average data, no rounding yet
 y_power_cars_avg = y_power_cars_avg/num_iter

@@ -48,7 +48,8 @@ final9 = final.loc[mask9]
 h_in = 6
 ini = datetime.datetime(2022, 3, 1, h_in, 0, 0)
 one_min = datetime.timedelta(seconds=60)
-num_min = 18*60 # 18 hours
+# num_min = 18*60 # 18 hours
+num_min = 60 #1 hour for config
 
 records = {}
 numRequestsRed = 0

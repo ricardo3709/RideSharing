@@ -24,7 +24,7 @@ np.random.seed(10)
 n_veh = 100
 
 # Number of iterations for avg random SOC case
-num_iter = 10
+num_iter = 1
 
 # Initialize arrays
 miss_ride_time_avg = [0]*tData.num_min
@@ -41,7 +41,10 @@ delta_ride = 2  # Max zones away from customer for pick-up
 min_travel_time = 5  # min
 min_consume = 0.5  # kWh
 power_transferred = 12  # kW for each car charging
-discharge_rate = 0.1  # kWh/minute
+
+# discharge_rate = 0.1  # kWh/minute
+discharge_rate = 0 # MODIFY:make it =0
+
 charge_rate = discharge_rate * 2
 infeasib_cost = 1e5
 infeasib_threas = 1e4
@@ -49,7 +52,8 @@ travel_edge_time = 10
 in_value = 1.0 / n_veh  # for initialization of x_ij
 
 # Random SOC array
-min_charge = 6
+# min_charge = 6 # MODIFY: make it = 0 so EV never needs to charge.
+min_charge = 0 # MODIFY: make it = 0 so EV never needs to charge.
 intermediate_charge = 31
 full_charge = 50  # kWh
 random_soc = [[np.random.uniform(min_charge, full_charge) for n in range(n_veh)] for iter in range(num_iter)]
@@ -78,9 +82,10 @@ for it in range(num_iter):
 
     # Initiate the state of charge for each vehicle
     # Choose between random and full_charge
+    # MODIFY: make every vehicle soc = full_charge
     for j in range(n_veh):
-        vehicles[j].stateOfCharge = random_soc[it][j]
-        #vehicles[j].stateOfCharge = full_charge
+        # vehicles[j].stateOfCharge = random_soc[it][j]
+        vehicles[j].stateOfCharge = full_charge
 
     # Track charging
     y_power_cars = []
